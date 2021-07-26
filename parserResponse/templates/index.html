@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Parser</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+	<script src='{% static "index.js" %}'></script>
+</head>
+<body>
+	<div class='container mt-2'>
+		<form action='' id='filter-form' method='POST'>
+			{% csrf_token %}
+			<div class='container ml-5'>
+				<div class='row  justify-content-center'>
+					<div class='col'>
+						<p>Markets</p>
+						{{ form.markets }}
+					</div>
+					<div class='col mt-5'>
+						<p>Profit %:</p>
+						{{ form.profitUp }}
+						{{ form.profitDown }}
+						<div class='pt-5'>
+							<p>Объём:</p>
+							{{ form.volume }}
+						</div>
+					</div>
+				</div>
+			</div>
+			<input type="submit" value='Применить'>
+		</form>
+	</div>
+	<div class='container mt-5'>
+		<table class='table table-bordered border-dark'>
+			<colgroup>
+				<col style="background:None">
+				<col style="background-color:greenyellow;">
+				<col style="background-color:salmon;">
+				<col style="background-color:blanchedalmond;">
+				<col style="background:Khaki">
+			</colgroup>
+			<tr>
+				<th class='w-25 p-2 col'>Название монеты</th>
+				<th class='w-25 p-2'>Биржа (Buy)</th>
+				<th class='w-25 p-2'>Биржа (Sell)</th>
+				<th class='w-25 p-2'>Объем</th>
+				<th class='w-25 p-2'>Profit</th>
+			</tr>
+				{% for o in object_list %}
+				<tr class='m-2 table-kid'>
+					<td class='ml-3'><a href="https://www.coingecko.com/en/coins/{{ o.coin| slugify }}#markets" target="_blank">{{ o.coin }}</a></td>
+					<td class='ml-3'>{{ o.market1 }}</td>
+					<td class='ml-3'>{{ o.market2 }}</td>
+					<td class='ml-3'>{{ o.volume }}</td>
+					<td class='ml-3'>{{ o.profit }}</td>
+				</tr>
+				{% endfor %}
+		</table>
+		<form method='post' id='ajax'>
+			{% csrf_token %}
+			<input type='submit' value='Ещё...'>
+		</form>	
+	</div>
+</body>
+</html>
