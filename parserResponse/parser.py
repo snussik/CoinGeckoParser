@@ -47,11 +47,9 @@ def get_markets_info(id_):
 	coin_info_response = requests.get('https://api.coingecko.com/api/v3/coins/{}?localization=false&tickers=true&market_data=false&community_data=false&developer_data=false&sparkline=false'.format(id_))
 	if coin_info_response.status_code == 200:
 		coin_data = json.loads(coin_info_response.text)
-		if coin_data['asset_platform_id'] == 'ethereum':
-			return None
 		name = coin_data['name']
 		tickers = coin_data.get('tickers')
-		if len(tickers) > 1 and 'Short' not in name and 'Long' not in name:
+		if len(tickers) > 1:
 			markets_prices, volumes = collect_markets_prices(tickers)
 			if len(markets_prices) > 1:
 				diff = find_diffs(markets_prices, volumes)	
@@ -81,7 +79,7 @@ if response.status_code == 200:
 		data = json.loads(response.text)
 		for d in data:
 			id_ = d['id']
-			if id_ == '':
+			if id_ == '' or 'Short' in d['name'] or 'Long' in d['name'] or 'ethereum' in d['platforms'].keys():
 				continue
 			
 			data = get_markets_info(id_)
@@ -101,6 +99,7 @@ if response.status_code == 200:
 					cur.execute(command, (coin, m1, m2, volume, profit))
 					conn.commit()
 			time.sleep(1.21)
+		print('///') * 100
 
 
 				

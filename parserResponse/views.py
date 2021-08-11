@@ -6,7 +6,7 @@ from .forms import FilterForm
 from functools import reduce
 from django.core.paginator import Paginator
 from django.http import QueryDict
-
+from django.db.models import Q
 
 
 class MainView(FormView):
@@ -27,10 +27,12 @@ class MainView(FormView):
 		data = list()
 		query = ArbitSituation.objects.all()
 		if markets:
-			for i in markets:
-				data.append(ArbitSituation.objects.filter(market1=i))
-				data.append(ArbitSituation.objects.filter(market2=i))
-
+			if len(markets) > 1:
+				for i in range(len(markets) - 1):
+					for j in range(i+1, len(markets)):
+						data.append(ArbitSituation.objects.filter(market1=markets[i]).filter(market2=markets[j]))
+			elif len(markets) == 1:
+				data.append(ArbitSituation.objects.filter(Q(market1=markets[0]) | Q(market2=markets[0])))
 		if data:
 			query = reduce(lambda x, y : x | y, data)
 		if profitUp or profitDown:
