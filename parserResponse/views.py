@@ -24,8 +24,11 @@ class MainView(FormView):
 		profitUp = form.cleaned_data.get('profitUp')
 		profitDown = form.cleaned_data.get('profitDown')
 		volume = form.cleaned_data.get('volume')
+		volumeDown = form.cleaned_data.get('volumeDown')
+
 		data = list()
 		query = ArbitSituation.objects.all()
+
 		if markets:
 			if len(markets) > 1:
 				for i in range(len(markets) - 1):
@@ -33,8 +36,10 @@ class MainView(FormView):
 						data.append(ArbitSituation.objects.filter(market1=markets[i]).filter(market2=markets[j]))
 			elif len(markets) == 1:
 				data.append(ArbitSituation.objects.filter(Q(market1=markets[0]) | Q(market2=markets[0])))
+
 		if data:
 			query = reduce(lambda x, y : x | y, data)
+
 		if profitUp or profitDown:
 			if profitUp:
 				profitUp = 1 + profitUp/100
@@ -45,10 +50,14 @@ class MainView(FormView):
 			else:
 				profitDown = 100
 			query = query.filter(profit__gte=profitUp).filter(profit__lte=profitDown)
+
 		if volume:
 			query = query.filter(volume__gte=volume)
+		if volumeDown:
+			query = query.filter(volume__lte=volumeDown)
 
 		next_page = kwargs.get('p', 1)
+
 		if next_page != 1:
 			return query
 		obj = Paginator(query, 20)

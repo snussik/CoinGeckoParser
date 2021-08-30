@@ -13,3 +13,4 @@ class FilterForm(forms.Form):
 	profitUp = forms.FloatField(required=False)
 	profitDown = forms.FloatField(required=False)
 	volume = forms.IntegerField(required=False)
+	volumeDown = forms.IntegerField(required=False)

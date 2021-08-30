@@ -7,7 +7,8 @@ import pathlib
 
 
 birg = ['Binance', 'Gate.io', 'MEXC Global', 'PancakeSwap (v2)', 'EXMO', 
-			 'KuCoin', 'Poloniex', 'Kraken', 'OKEx', 'Bittrex', 'Crex24', 'BKEX', 'YoBit']
+			 'KuCoin', 'Poloniex', 'Kraken', 'OKEx', 'Bittrex', 'Crex24', 'BKEX', 'YoBit', 'Huobi Global',
+			 'Coinbase Exchange', 'FTX', 'Bitfinex', 'BigONE', 'Gemini', 'P2PB2B', 'CoinTiger']
 fees = {'Binance': 0.1, 'Gate.io': 0.2, 'MEXC Global': 0.2, 'EXMO': 0.3, 'KuCoin': 0.1, 'PancakeSwap (v2)': 0.25}
 
 def collect_markets_prices(tickers):
@@ -43,7 +44,6 @@ def find_diffs(markets_prices, volumes):
 
 
 def get_markets_info(id_):
-	print(id_)
 	coin_info_response = requests.get('https://api.coingecko.com/api/v3/coins/{}?localization=false&tickers=true&market_data=false&community_data=false&developer_data=false&sparkline=false'.format(id_))
 	if coin_info_response.status_code == 200:
 		coin_data = json.loads(coin_info_response.text)
@@ -76,7 +76,7 @@ conn.commit()
 
 if response.status_code == 200:
 	while 1:
-		data = json.loads(response.text)
+		data = json.loads(response.text)[::-1]
 		for d in data:
 			id_ = d['id']
 			if id_ == '' or 'Short' in d['name'] or 'Long' in d['name'] or 'ethereum' in d['platforms'].keys():
@@ -99,7 +99,7 @@ if response.status_code == 200:
 					cur.execute(command, (coin, m1, m2, volume, profit))
 					conn.commit()
 			time.sleep(1.21)
-		print('///') * 100
+		print('Cycled...') * 100
 
 
 				
